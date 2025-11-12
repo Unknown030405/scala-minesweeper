@@ -10,6 +10,9 @@ package io.github.unknown030405.minesweeper
  * @param minePositions the set of positions containing mines; must be within board bounds
  */
 case class Board private(size: NonNegativeInt, private val minePositions: Set[Position]) {
+  /**
+   * Total number of mines, that are on the field
+   */
   val totalMinesNum: Int = minePositions.size
 
   /**

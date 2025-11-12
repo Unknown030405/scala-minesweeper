@@ -14,6 +14,10 @@ class NonNegativeInt private(val value: Int) extends AnyVal {
     }
   }
 
+  def /(other: NonNegativeInt): NonNegativeInt = NonNegativeInt(value / other.value)
+
+  def *(other: NonNegativeInt): NonNegativeInt = NonNegativeInt(value * other.value)
+
   def <(other: NonNegativeInt): Boolean = value < other.value
 
   def <=(other: NonNegativeInt): Boolean = value <= other.value

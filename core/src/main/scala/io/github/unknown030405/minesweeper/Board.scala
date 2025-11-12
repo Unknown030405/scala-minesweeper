@@ -9,7 +9,9 @@ package io.github.unknown030405.minesweeper
  * @param size          the width and height of the square board; must be positive
  * @param minePositions the set of positions containing mines; must be within board bounds
  */
-case class Board private (size: NonNegativeInt, private val minePositions: Set[Position]) {
+case class Board private(size: NonNegativeInt, private val minePositions: Set[Position]) {
+  val totalMinesNum: Int = minePositions.size
+
   /**
    * Checks whether the given position contains a mine.
    *
@@ -84,6 +86,18 @@ case class Board private (size: NonNegativeInt, private val minePositions: Set[P
    * @return `true` if the position is inside the board, `false` otherwise
    */
   def isValidPosition(pos: Position): Boolean = pos.row < size && pos.col < size
+
+
+  /**
+   * Checks whether a given flag set covers all the mines
+   *
+   * This method is package-private to prevent external code (e.g. UI layers)
+   * from cheating by inspecting mine positions indirectly.
+   *
+   * @param flags the set of flags to validate
+   * @return `true` if sets are equal, `false` otherwise
+   */
+  private[minesweeper] def checkFlags(flags: Set[Position]): Boolean = flags == minePositions
 }
 
 object Board {

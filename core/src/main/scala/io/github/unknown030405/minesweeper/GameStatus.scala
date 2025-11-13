@@ -4,8 +4,6 @@ sealed trait GameStatus
 
 object GameStatus {
   case object Playing extends GameStatus
-
-  case object Won extends GameStatus
-
-  case object Lost extends GameStatus
+  case object Won     extends GameStatus
+  case object Lost    extends GameStatus
 }

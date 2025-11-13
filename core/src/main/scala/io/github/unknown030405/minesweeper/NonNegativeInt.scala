@@ -1,6 +1,6 @@
 package io.github.unknown030405.minesweeper
 
-class NonNegativeInt private(val value: Int) extends AnyVal {
+class NonNegativeInt private (val value: Int) extends AnyVal {
   override def toString: String = value.toString
 
   def +(other: NonNegativeInt): NonNegativeInt =
@@ -33,8 +33,8 @@ object NonNegativeInt {
 
   def apply(value: Int): NonNegativeInt = unsafeFromInt(value)
 
-  val zero: NonNegativeInt = NonNegativeInt(0)
-  val one: NonNegativeInt = NonNegativeInt(1)
-  val two: NonNegativeInt = NonNegativeInt(2)
+  val zero: NonNegativeInt  = NonNegativeInt(0)
+  val one: NonNegativeInt   = NonNegativeInt(1)
+  val two: NonNegativeInt   = NonNegativeInt(2)
   val three: NonNegativeInt = NonNegativeInt(3)
 }

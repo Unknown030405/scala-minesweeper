@@ -88,6 +88,7 @@ case class Game private (
     def helper(revealed: Set[Position], queue: List[Position]): Set[Position] = {
       queue match {
         case Nil                                                               => revealed
+        case head :: tail if revealed.contains(head)                           => helper(revealed, tail)
         case head :: tail if board.getCell(head).contains(NonNegativeInt.zero) =>
           helper(
             revealed + head,

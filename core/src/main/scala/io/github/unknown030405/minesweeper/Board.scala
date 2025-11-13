@@ -105,12 +105,29 @@ case class Board private (size: NonNegativeInt, private val minePositions: Set[P
   private[minesweeper] def checkFlags(flags: Set[Position]): Boolean = flags == minePositions
 }
 
+/** Companion object for [[Board]], providing factory methods.
+  */
 object Board {
-  def create(size: NonNegativeInt, mines: Seq[Position]): Option[Board] = {
+
+  /** Creates a new board for Minesweeper game with random mine placement.
+    *
+    * @param size
+    *   board size (width = height)
+    * @param mines
+    *   iterable collection storing all mines positions. Mines positions should be valid for field of `size` and there
+    *   should be at least one empty cell
+    * @return
+    *   `Some(board)` if parameters are valid, `None` otherwise
+    */
+  def create(size: NonNegativeInt, mines: Iterable[Position]): Option[Board] = {
     val potentialBoard = Board(size, mines.toSet)
-    mines.find(potentialBoard.isValidPosition) match {
-      case None    => Some(potentialBoard) // All mines in set were valid
-      case Some(_) => None                 // Found an invalid mine, so couldn't build Board using this values
+    if (mines.size >= size.value) {
+      None
+    } else {
+      mines.find(!potentialBoard.isValidPosition(_)) match {
+        case None    => Some(potentialBoard) // All mines in set were valid
+        case Some(_) => None                 // Found an invalid mine, so couldn't build Board using this values
+      }
     }
   }
 }

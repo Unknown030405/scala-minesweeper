@@ -33,7 +33,8 @@ object NonNegativeInt {
 
   def apply(value: Int): NonNegativeInt = unsafeFromInt(value)
 
-  val zero = NonNegativeInt(0)
-  val one = NonNegativeInt(1)
-  val two = NonNegativeInt(2)
+  val zero: NonNegativeInt = NonNegativeInt(0)
+  val one: NonNegativeInt = NonNegativeInt(1)
+  val two: NonNegativeInt = NonNegativeInt(2)
+  val three: NonNegativeInt = NonNegativeInt(3)
 }

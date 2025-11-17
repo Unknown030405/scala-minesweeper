@@ -121,7 +121,7 @@ object Board {
     */
   def create(size: NonNegativeInt, mines: Iterable[Position]): Option[Board] = {
     val potentialBoard = Board(size, mines.toSet)
-    if (mines.size >= size.value) {
+    if (mines.size >= size.value * size.value) {
       None
     } else {
       mines.find(!potentialBoard.isValidPosition(_)) match {

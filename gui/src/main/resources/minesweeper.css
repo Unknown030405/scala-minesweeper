@@ -1,0 +1,46 @@
+.button {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-color: #c0c0c0;
+    -fx-border-color: #ffffff #808080 #808080 #ffffff;
+    -fx-border-width: 2px;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+}
+
+.button:pressed {
+    -fx-background-color: #a0a0a0;
+    -fx-border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.Mine {
+    -fx-background-color: #ff0000;
+    -fx-text-fill: white;
+}
+
+.Flagged {
+    -fx-background-color: #ffff00;
+    -fx-text-fill: red;
+}
+
+.Empty {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: black;
+}
+
+.Opened(1) {
+    -fx-background-color: #d3d3d3;
+    -fx-border-color: #808080;
+}
+.Opened(2) {
+    -fx-background-color: #d3d3d3;
+    -fx-border-color: #808080;
+}
+.Opened(3) {
+    -fx-background-color: #d3d3d3;
+    -fx-border-color: #808080;
+}
+.Opened(4) {
+    -fx-background-color: #d3d3d3;
+    -fx-border-color: #808080;
+}

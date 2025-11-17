@@ -6,6 +6,7 @@ case class GameViewState(
     game: Game,
     onFieldClick: (Position, Boolean, GameViewState) => Unit,
     onToggleFlag: (Boolean, GameViewState) => Unit,
-    onNewGame: NewGameParams => Unit,
-    flagMode: Boolean
+    onNewGame: (NewGameParams, Int) => Unit,
+    flagMode: Boolean,
+    bestTime: Int
 )

@@ -1,18 +1,40 @@
 package io.github.unknown030405.minesweeper.gui
 
 import io.github.unknown030405.minesweeper.{CellView, Difficulty, Game, NonNegativeInt, Position}
-import scalafx.application.JFXApp3
+import scalafx.animation.{KeyFrame, Timeline}
+import scalafx.beans.property.IntegerProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.control.{Alert, Button, ButtonType, CheckBox, ChoiceBox, Dialog, Label, TextField}
+import scalafx.scene.control.{Alert, Button, ButtonType, CheckBox, ChoiceBox, Label, TextField}
+import scalafx.scene.image.Image
 import scalafx.scene.layout.{GridPane, HBox, VBox}
 import scalafx.scene.text.Font
+import scalafx.util.Duration
 
 import scala.annotation.tailrec
 
 object GameView {
+  val gameIcon                     = new Image(getClass.getResource("/icon.png").toExternalForm)
+  val timeSeconds: IntegerProperty = IntegerProperty(0)
+  private val timerLabel: Label    = new Label("Время: 0") {
+    margin = Insets(10)
+    font = Font.font(26)
+  }
+  private val timer: Timeline = new Timeline {
+    keyFrames = Seq(
+      KeyFrame(
+        Duration(1000),
+        onFinished = _ => {
+          timeSeconds.set(timeSeconds.get() + 1)
+          timerLabel.setText(s"Время: ${timeSeconds.get()}")
+        }
+      )
+    )
+    cycleCount = -1
+  }
+
   @tailrec
-  final def showNewGameDialog(startGame: NewGameParams => Unit, callback: () => Unit): Unit = {
+  final def showNewGameDialog(startGame: (NewGameParams, Int) => Unit, callback: () => Unit, prevBest: Int): Unit = {
     val sizeField = new TextField() {
       maxWidth = 80
       text = "5"
@@ -32,13 +54,12 @@ object GameView {
       vgap = 10
       padding = Insets(20, 150, 10, 10)
 
-      add(new Label("Board size (3–30):"), 0, 0)
+      add(new Label("Board size (3–25):"), 0, 0)
       add(sizeField, 1, 0)
 
       add(new Label("Difficulty:"), 0, 1)
       add(difficultyChoice, 1, 1)
     }
-
     val dialog = new Alert(Alert.AlertType.Confirmation) {
       title = "New Game"
       contentText = ""
@@ -53,15 +74,16 @@ object GameView {
         (for {
           size <- sizeField.text.value.toIntOption.flatMap(NonNegativeInt.fromInt)
           difficulty = difficultyChoice.value.value
-          if size.value >= Game.MIN_FIELD_SIZE.value
+          if size.value >= Game.MIN_FIELD_SIZE.value && size.value <= 25
         } yield NewGameParams(size, difficulty)) match {
           case Some(params) =>
             println(s"${params.size} - ${params.difficulty}")
-            startGame(params)
+            startGame(params, prevBest)
+            timer.play()
             println("new game started")
           case None =>
-            showError("Invalid size. Please enter a number between 3x` and 30.")
-            showNewGameDialog(startGame, () => callback())
+            showError("Invalid size. Please enter a number between 3 and 25")
+            showNewGameDialog(startGame, () => callback(), prevBest)
         }
       case _ =>
         println("other Button was pressed")
@@ -70,6 +92,8 @@ object GameView {
   }
 
   def showLost(gameViewState: GameViewState): VBox = {
+    timer.stop()
+    timeSeconds.value = 0
     val alert = new Alert(Alert.AlertType.Information) {
       title = "Game Over"
       contentText = "Sorry, you've exploded"
@@ -80,12 +104,19 @@ object GameView {
   }
 
   def showWin(gameViewState: GameViewState): VBox = {
+    timer.stop()
+    val score: Int = timeSeconds.get() * gameViewState.game.getSize.value * gameViewState.game.totalMines.value
+    timeSeconds.value = 0
     val alert = new Alert(Alert.AlertType.Information) {
       title = "Game Over"
-      contentText = "Hooray! You've won"
+      contentText = s"Hooray! You've won\nYour score is: $score"
     }
     alert.show()
-    render(gameViewState)
+    render(gameViewState.copy(bestTime = if (gameViewState.bestTime > score) {
+      gameViewState.bestTime
+    } else {
+      score
+    }))
   }
 
   def showError(message: String): Unit = {
@@ -103,7 +134,7 @@ object GameView {
       children = List(
         new Button("New Game") {
           minWidth = 160
-          onAction = _ => showNewGameDialog(gameViewState.onNewGame, () => ())
+          onAction = _ => showNewGameDialog(gameViewState.onNewGame, () => (), gameViewState.bestTime)
           margin = Insets(10)
         },
         new Label(s"Мины: ${gameViewState.game.totalMines}") {
@@ -163,14 +194,11 @@ object GameView {
     }
     val bottomBar = new HBox {
       children = List(
-        new Label("Лучшее: --") {
+        new Label(s"Лучшее: ${if (gameViewState.bestTime == 0) "--" else gameViewState.bestTime.toString}") {
           margin = Insets(10)
           font = Font.font(26)
         },
-        new Label("Время: 0") {
-          margin = Insets(10)
-          font = Font.font(26)
-        },
+        timerLabel,
         new Label(s"Флаги: ${gameViewState.game.flaggedCount}") {
           margin = Insets(10)
           font = Font.font(26)

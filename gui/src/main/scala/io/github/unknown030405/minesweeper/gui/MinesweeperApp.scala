@@ -3,6 +3,7 @@ package io.github.unknown030405.minesweeper.gui
 import io.github.unknown030405.minesweeper.{Game, GameStatus, Position, RevealResult}
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
+import scalafx.scene.image.Image
 
 import scala.sys.exit
 
@@ -17,22 +18,25 @@ object MinesweeperApp extends JFXApp3 {
       () => {
         stopApp()
         exit()
-      }
+      },
+      0
     )
   }
 
-  def onNewGame(params: NewGameParams): Unit = {
+  def onNewGame(params: NewGameParams, prevBest: Int = 0): Unit = {
     Game.newGame(params.size, params.difficulty) match {
       case Some(game) =>
         stage = new JFXApp3.PrimaryStage {
           title = "Minesweeper"
+          icons.add(GameView.gameIcon)
           scene = new Scene(sceneSize, sceneSize) {
             root = GameView.render(GameViewState(
               game,
               onClick,
               onToggleFlag,
               onNewGame,
-              flagMode = false
+              flagMode = false,
+              prevBest
             ))
 
             stylesheets = sheets
@@ -46,7 +50,8 @@ object MinesweeperApp extends JFXApp3 {
           () => {
             stopApp()
             exit()
-          }
+          },
+          prevBest
         )
     }
   }

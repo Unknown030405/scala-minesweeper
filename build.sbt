@@ -1,6 +1,3 @@
-//import sbt.Keys.libraryDependencies
-import coursierapi.MavenRepository
-
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.16"
@@ -16,12 +13,23 @@ lazy val core = (project in file("core"))
     )
   )
 
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
+
+assembly / mainClass := Some("io.github.unknown030405.minesweeper.gui.MinesweeperApp")
+
 lazy val gui = (project in file("gui"))
   .dependsOn(core)
   .settings(
-    name          := "minesweeper-gui",
-    organization  := "io.github.unknown030405",
-    fork          := true,
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case x => MergeStrategy.first
+    },
+    name         := "minesweeper-gui",
+    organization := "io.github.unknown030405",
+//    fork         := true,
     javaOptions ++= {
       val javafxPath = System.getProperty("java.class.path").split(java.io.File.pathSeparator)
         .find(_.contains("javafx"))
@@ -33,4 +41,3 @@ lazy val gui = (project in file("gui"))
       "org.scalafx"   %% "scalafx"   % "24.0.2-R36",
     )
   )
-

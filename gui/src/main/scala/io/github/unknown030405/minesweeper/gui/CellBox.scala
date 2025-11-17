@@ -7,6 +7,7 @@ object CellBox {
   def render(cell: CellView): Button = {
     val txt = cell match {
       case CellView.Hidden    => ""
+      case CellView.Empty     => ""
       case CellView.Flagged   => "🚩"
       case CellView.Mine      => "\uD83D\uDCA3"
       case CellView.Open(num) => num.toString

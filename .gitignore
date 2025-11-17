@@ -47,3 +47,7 @@ build/
 
 ### Scala ###
 .bsp/
+/minesweeper-app/minesweeper.exe
+/minesweeper-app/launch4j.log
+/minesweeper-app/launch4j-config.xml
+/minesweeper-app/launch4j-config-0.1.xml

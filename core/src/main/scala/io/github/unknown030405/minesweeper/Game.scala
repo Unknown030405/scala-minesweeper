@@ -63,7 +63,7 @@ case class Game private (
         case (result, Some(cellView))
             if result.revealed.size ==
               (result.board.size.value * result.board.size.value) - result.board.totalMinesNum =>
-          RevealResult.Opened(cellView, winGame)
+          RevealResult.Opened(cellView, result.winGame)
         case (result, Some(cellView)) if cellView == CellView.Mine =>
           RevealResult.Exploded(pos, result)
         case (result, Some(cellView)) => RevealResult.Opened(cellView, result)
@@ -92,7 +92,7 @@ case class Game private (
         case head :: tail if board.getCell(head).contains(NonNegativeInt.zero) =>
           helper(
             revealed + head,
-            board.getNeighbours(head) ++ tail
+            board.getNeighbours(head).filter(!revealed.contains(_)) ++ tail
           )
         case head :: tail if board.getCell(head).isDefined => helper(revealed + head, tail)
         case _ :: tail                                     => helper(revealed, tail)
@@ -150,8 +150,13 @@ case class Game private (
     */
   def toggleFlag(pos: Position): Game = {
     if (canToggleFlag(pos)) {
-      val newFlags = flagged + pos
-      copy(flagged = newFlags)
+      copy(flagged =
+        if (flagged.contains(pos)) {
+          flagged.filter(elem => elem.row != pos.row || elem.col != pos.col)
+        } else {
+          flagged + pos
+        }
+      )
     } else {
       copy()
     }
@@ -222,14 +227,21 @@ case class Game private (
     * @return
     *   the mine count as a regular `Int` (for display purposes)
     */
-  def totalMines: Int = board.totalMinesNum
+  def totalMines: NonNegativeInt = NonNegativeInt.fromInt(board.totalMinesNum).getOrElse(NonNegativeInt.zero)
 
   /** Returns the number of flags currently placed by the player.
     *
     * @return
-    *   the flag count as a regular `Int` (for display purposes)
+    *   the flag count
     */
-  def flaggedCount: Int = flagged.size
+  def flaggedCount: NonNegativeInt = NonNegativeInt.fromInt(flagged.size).getOrElse(NonNegativeInt.zero)
+
+  /** Returns total size of board
+    *
+    * @return
+    *   board size
+    */
+  def getSize: NonNegativeInt = board.size
 }
 
 /** Companion object for [[Game]], providing factory methods.

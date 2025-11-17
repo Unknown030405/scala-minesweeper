@@ -14,4 +14,6 @@ object Difficulty {
       case Hard   => size * NonNegativeInt.two
     }
   }
+
+  val values = List(Easy, Normal, Hard)
 }
